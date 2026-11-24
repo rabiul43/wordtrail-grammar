@@ -1,5 +1,5 @@
 /* Wordtrail Grammar: service worker. Bump VERSION when any file changes. */
-var VERSION = 'wtg-v3';
+var VERSION = 'wtg-v4';
 var SHELL = [
   './', './index.html', './styles.css', './data.js', './app.js',
   './manifest.webmanifest',

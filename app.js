@@ -70,8 +70,12 @@
   function isDone(id) { return !!progress.lessons[id]; }
   function starsOf(id) { return progress.lessons[id] ? progress.lessons[id].stars : 0; }
   function isUnlocked(id) {
+    /* Any level can be skipped to: the first lesson of every level is open.
+       Inside a level, lessons still go in order. */
     var idx = ALL.map(function (l) { return l.id; }).indexOf(id);
-    return idx === 0 || (idx > 0 && isDone(ALL[idx - 1].id));
+    if (idx < 0) return false;
+    if (idx === 0) return true;
+    return ALL[idx - 1].levelId !== ALL[idx].levelId || isDone(ALL[idx - 1].id);
   }
   function totalStars() {
     var n = 0;
@@ -85,7 +89,7 @@
       if (!lv.lessons.length) return 'soon';
       if (lv.lessons.every(function (l) { return isDone(l.id); })) return 'done';
       if (!found) { found = true; return 'current'; }
-      return 'locked';
+      return 'open';
     });
   }
 
@@ -119,7 +123,7 @@
   }
 
   /* ---------- home ---------- */
-  var STATUS = { done: 'সম্পন্ন', current: 'এখন এখানে', locked: 'লক করা', soon: 'শীঘ্রই আসছে' };
+  var STATUS = { done: 'সম্পন্ন', current: 'এখন এখানে', open: 'খোলা', locked: 'লক করা', soon: 'শীঘ্রই আসছে' };
   var RADII = ['50%', '42% 58% 55% 45% / 50% 42% 58% 50%', '58% 42% 46% 54% / 46% 56% 44% 54%'];
   var TREES = ['#7FD1B9', '#FFB4A8', '#C9B8FF'];
 
@@ -167,7 +171,7 @@
       '<div class="chips" aria-hidden="true"><span class="c-art">The</span><span class="c-noun">cat</span><span class="c-verb">jumps</span><span class="c-adv">high.</span></div>' +
       '<p>প্রতিটি পাঠ ছোট, রঙিন আর খেলার মতো। কিছু জানার দরকার নেই, শুধু পথ ধরে এগোও।</p>' +
       '<button class="btn" data-action="continue">' + label + '</button></section>' +
-      '<section class="trail-sec" aria-labelledby="trailH"><div class="sec-head"><span class="tag">তোমার অ্যাডভেঞ্চার ম্যাপ</span><h2 id="trailH">' + bn(LEVELS.length) + 'টি ধাপ, একটাই পথ</h2><p>একটা ধাপ শেষ করলে পরের দরজা খুলে যাবে।</p></div>' +
+      '<section class="trail-sec" aria-labelledby="trailH"><div class="sec-head"><span class="tag">তোমার অ্যাডভেঞ্চার ম্যাপ</span><h2 id="trailH">' + bn(LEVELS.length) + 'টি ধাপ, একটাই পথ</h2><p>যেকোনো ধাপে ট্যাপ করে সেখান থেকেই শুরু করতে পারো।</p></div>' +
       '<div class="flag"><span>' + I.flag + 'যাত্রা শুরু</span></div>' +
       '<div class="trail">' + trail(states) + '</div>' +
       '<div class="finish">' + I.trophy + '<h3>গন্তব্য: মাস্টার সার্টিফিকেট</h3><p>' +
@@ -383,10 +387,7 @@
     if (a === 'lesson') { startLesson(id); return; }
     if (a === 'start-level') { startLesson(firstOpenLesson(id).id); return; }
     if (a === 'level') {
-      var states = levelStates();
-      var s = states[LEVELS.indexOf(level(id))];
-      if (s === 'done' || s === 'current' || s === 'soon') go({ name: 'level', id: id });
-      else toast('আগের ধাপ শেষ করলে এটি খুলে যাবে।');
+      go({ name: 'level', id: id });
       return;
     }
 
