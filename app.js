@@ -124,7 +124,7 @@
   var TREES = ['#7FD1B9', '#FFB4A8', '#C9B8FF'];
 
   function topbar() {
-    return '<header class="topbar"><div class="brand"><span class="logo">Aa</span><span class="brand-name">গ্রামার অ্যাডভেঞ্চার</span></div>' +
+    return '<header class="topbar"><div class="brand"><span class="logo">Aa</span><span class="brand-name">Wordtrail Grammar</span></div>' +
       '<div class="stars-pill" aria-label="মোট তারা ' + bn(totalStars()) + '">' + I.star(true) + '<span>' + bn(totalStars()) + '</span></div></header>';
   }
 

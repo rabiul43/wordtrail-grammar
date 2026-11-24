@@ -23,8 +23,44 @@
 <script src="app.js"></script>
 <script>
 if ('serviceWorker' in navigator) {
+  var wantUpdate = false;
+  function showUpdate(worker) {
+    if (document.getElementById('updateBar')) return;
+    var bar = document.createElement('div');
+    bar.id = 'updateBar';
+    bar.className = 'update-bar';
+    bar.setAttribute('role', 'status');
+    var msg = document.createElement('span');
+    msg.textContent = 'নতুন সংস্করণ এসেছে';
+    var ok = document.createElement('button');
+    ok.type = 'button';
+    ok.textContent = 'আপডেট করো';
+    ok.onclick = function () { wantUpdate = true; worker.postMessage('SKIP_WAITING'); };
+    var later = document.createElement('button');
+    later.type = 'button';
+    later.className = 'later';
+    later.textContent = 'পরে';
+    later.onclick = function () { bar.remove(); };
+    bar.appendChild(msg); bar.appendChild(ok); bar.appendChild(later);
+    document.body.appendChild(bar);
+  }
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('sw.js').catch(function () {});
+    navigator.serviceWorker.register('sw.js').then(function (reg) {
+      if (reg.waiting && navigator.serviceWorker.controller) showUpdate(reg.waiting);
+      reg.addEventListener('updatefound', function () {
+        var w = reg.installing;
+        if (!w) return;
+        w.addEventListener('statechange', function () {
+          if (w.state === 'installed' && navigator.serviceWorker.controller) showUpdate(w);
+        });
+      });
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) reg.update().catch(function () {});
+      });
+    }).catch(function () {});
+  });
+  navigator.serviceWorker.addEventListener('controllerchange', function () {
+    if (wantUpdate) location.reload();
   });
 }
 </script>

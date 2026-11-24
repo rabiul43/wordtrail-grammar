@@ -1,5 +1,5 @@
 /* Wordtrail Grammar: service worker. Bump VERSION when any file changes. */
-var VERSION = 'wtg-v1';
+var VERSION = 'wtg-v2';
 var SHELL = [
   './', './index.html', './styles.css', './data.js', './app.js',
   './manifest.webmanifest',
@@ -8,8 +8,11 @@ var SHELL = [
 ];
 
 self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(SHELL); })
-    .then(function () { return self.skipWaiting(); }));
+  e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(SHELL); }));
+});
+
+self.addEventListener('message', function (e) {
+  if (e.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', function (e) {
