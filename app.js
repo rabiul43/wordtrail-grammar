@@ -167,11 +167,11 @@
       '<div class="chips" aria-hidden="true"><span class="c-art">The</span><span class="c-noun">cat</span><span class="c-verb">jumps</span><span class="c-adv">high.</span></div>' +
       '<p>প্রতিটি পাঠ ছোট, রঙিন আর খেলার মতো। কিছু জানার দরকার নেই, শুধু পথ ধরে এগোও।</p>' +
       '<button class="btn" data-action="continue">' + label + '</button></section>' +
-      '<section class="trail-sec" aria-labelledby="trailH"><div class="sec-head"><span class="tag">তোমার অ্যাডভেঞ্চার ম্যাপ</span><h2 id="trailH">৯টি ধাপ, একটাই পথ</h2><p>একটা ধাপ শেষ করলে পরের দরজা খুলে যাবে।</p></div>' +
+      '<section class="trail-sec" aria-labelledby="trailH"><div class="sec-head"><span class="tag">তোমার অ্যাডভেঞ্চার ম্যাপ</span><h2 id="trailH">' + bn(LEVELS.length) + 'টি ধাপ, একটাই পথ</h2><p>একটা ধাপ শেষ করলে পরের দরজা খুলে যাবে।</p></div>' +
       '<div class="flag"><span>' + I.flag + 'যাত্রা শুরু</span></div>' +
       '<div class="trail">' + trail(states) + '</div>' +
       '<div class="finish">' + I.trophy + '<h3>গন্তব্য: মাস্টার সার্টিফিকেট</h3><p>' +
-      (allBuilt ? 'এখনকার সব পাঠ শেষ! বাকি ধাপগুলো তৈরি হচ্ছে।' : '৯টি ধাপ শেষ করলে পাবে নিজের লেখা গল্প আর একটি সার্টিফিকেট।') +
+      (allBuilt ? 'এখনকার সব পাঠ শেষ! বাকি ধাপগুলো তৈরি হচ্ছে।' : bn(LEVELS.length) + 'টি ধাপ শেষ করলে পাবে নিজের লেখা গল্প আর একটি সার্টিফিকেট।') +
       '</p></div></section></div>';
   }
 
@@ -179,7 +179,11 @@
   function levelScreen() {
     var lv = level(view.id);
     var st = levelStates()[LEVELS.indexOf(lv)];
-    var items = lv.lessons.map(function (ls, k) {
+    var items = !lv.lessons.length ? (lv.topics || []).map(function (t, k) {
+      return '<li><button class="lesson" disabled><span class="num">' + bn(k + 1) + '</span>' +
+        '<span class="txt"><strong>' + esc(t) + '</strong><span>শীঘ্রই আসছে</span></span>' +
+        '<span class="mini-stars" style="font-size:22px">' + I.lock + '</span></button></li>';
+    }).join('') : lv.lessons.map(function (ls, k) {
       var done = isDone(ls.id), open = isUnlocked(ls.id);
       var right = done
         ? '<span class="mini-stars" aria-label="' + bn(starsOf(ls.id)) + 'টি তারা">' + [1, 2, 3].map(function (n) { return I.star(n <= starsOf(ls.id)); }).join('') + '</span>'
@@ -381,8 +385,7 @@
     if (a === 'level') {
       var states = levelStates();
       var s = states[LEVELS.indexOf(level(id))];
-      if (s === 'done' || s === 'current') go({ name: 'level', id: id });
-      else if (s === 'soon') toast('এই ধাপটি শীঘ্রই আসছে!');
+      if (s === 'done' || s === 'current' || s === 'soon') go({ name: 'level', id: id });
       else toast('আগের ধাপ শেষ করলে এটি খুলে যাবে।');
       return;
     }
