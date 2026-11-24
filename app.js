@@ -176,7 +176,7 @@
       '<div class="trail">' + trail(states) + '</div>' +
       '<div class="finish">' + I.trophy + '<h3>গন্তব্য: মাস্টার সার্টিফিকেট</h3><p>' +
       (allBuilt ? 'এখনকার সব পাঠ শেষ! বাকি ধাপগুলো তৈরি হচ্ছে।' : bn(LEVELS.length) + 'টি ধাপ শেষ করলে পাবে নিজের লেখা গল্প আর একটি সার্টিফিকেট।') +
-      '</p></div></section></div>';
+      '</p></div></section><p class="ver">সংস্করণ: skip-2</p></div>';
   }
 
   /* ---------- level screen ---------- */

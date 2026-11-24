@@ -1,5 +1,5 @@
 /* Wordtrail Grammar: service worker. Bump VERSION when any file changes. */
-var VERSION = 'wtg-v4';
+var VERSION = 'wtg-v5';
 var SHELL = [
   './', './index.html', './styles.css', './data.js', './app.js',
   './manifest.webmanifest',
@@ -41,10 +41,13 @@ self.addEventListener('fetch', function (e) {
 
   if (url.origin !== location.origin) return;
 
-  /* App files: cache first, fall back to network */
-  e.respondWith(caches.match(req, { ignoreSearch: true }).then(function (hit) {
-    return hit || fetch(req).catch(function () {
-      if (req.mode === 'navigate') return caches.match('./index.html');
+  /* App files: network first (so updates show up at once), cached copy when offline */
+  e.respondWith(fetch(new Request(req, { cache: 'no-cache' })).then(function (r) {
+    if (r && r.ok) { var copy = r.clone(); caches.open(VERSION).then(function (c) { c.put(req, copy); }); }
+    return r;
+  }).catch(function () {
+    return caches.match(req, { ignoreSearch: true }).then(function (hit) {
+      return hit || (req.mode === 'navigate' ? caches.match('./index.html') : undefined);
     });
   }));
 });

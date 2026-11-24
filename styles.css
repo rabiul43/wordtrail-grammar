@@ -222,3 +222,5 @@ h1, h2, h3 { font-family: var(--f-display); font-weight: 800; line-height: 1.25;
   .wrap { padding-block: 32px 80px; }
   .brand-name { font-size: 22px; }
 }
+
+.ver { text-align: center; font-size: 13px; color: var(--ink3); margin: 8px 0 24px; }
